@@ -50,6 +50,12 @@ export const IPC = {
   UPDATES_DOWNLOAD: 'updates:download',
   UPDATES_INSTALL: 'updates:install',
 
+  // Local auth
+  AUTH_STATUS: 'auth:status',
+  AUTH_REGISTER: 'auth:register',
+  AUTH_LOGIN: 'auth:login',
+  AUTH_LOGOUT: 'auth:logout',
+
   // App
   APP_VERSION: 'app:version',
   APP_DATA_PATH: 'app:dataPath'

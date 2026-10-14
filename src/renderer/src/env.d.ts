@@ -61,6 +61,12 @@ declare global {
         install: () => Promise<any>
         onStatus: (callback: (payload: unknown) => void) => () => void
       }
+      auth: {
+        status: () => Promise<any>
+        register: (input: unknown) => Promise<any>
+        login: (input: unknown) => Promise<any>
+        logout: () => Promise<any>
+      }
     }
   }
 }

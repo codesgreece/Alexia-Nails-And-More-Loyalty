@@ -130,8 +130,9 @@ const utilityItems = [
   { to: '/settings', label: 'Ρυθμίσεις', icon: icons.settings }
 ]
 
-export function Layout() {
+export function Layout({ onLogout }: { onLogout?: () => void }) {
   const [version, setVersion] = useState('')
+  const [loggingOut, setLoggingOut] = useState(false)
 
   useEffect(() => {
     void api()
@@ -139,6 +140,16 @@ export function Layout() {
       .then(setVersion)
       .catch(() => setVersion(''))
   }, [])
+
+  async function handleLogout() {
+    setLoggingOut(true)
+    try {
+      await api().auth.logout()
+      onLogout?.()
+    } finally {
+      setLoggingOut(false)
+    }
+  }
 
   return (
     <div className="app-shell">
@@ -163,6 +174,14 @@ export function Layout() {
         </nav>
 
         <div className="sidebar-bottom">
+          <button
+            type="button"
+            className="sidebar-logout"
+            disabled={loggingOut}
+            onClick={() => void handleLogout()}
+          >
+            {loggingOut ? 'Έξοδος...' : 'Αποσύνδεση'}
+          </button>
           <div className="sidebar-utils" role="navigation" aria-label="Εργαλεία">
             {utilityItems.map((item) => (
               <NavLink

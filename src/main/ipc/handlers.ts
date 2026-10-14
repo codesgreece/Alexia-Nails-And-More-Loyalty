@@ -5,13 +5,21 @@ import type {
   CreateRewardInput,
   CustomerSearchParams,
   DateRange,
+  LoginLocalUserInput,
   RedeemRewardInput,
   RecordPurchaseInput,
   RegisterCustomerInput,
+  RegisterLocalUserInput,
   UpdateCustomerInput,
   UpdateRewardInput,
   UpdateSettingsInput
 } from '@shared/types'
+import {
+  getAuthStatus,
+  loginLocalUser,
+  logoutLocalUser,
+  registerLocalUser
+} from '../services/authService'
 import { getOpenDbPath } from '../db/connection'
 import { createBackup, restoreBackup } from '../services/backupService'
 import {
@@ -197,4 +205,13 @@ export function registerIpcHandlers(getMainWindow: () => BrowserWindow | null): 
   ipcMain.handle(IPC.UPDATES_CHECK, () => checkForUpdates())
   ipcMain.handle(IPC.UPDATES_DOWNLOAD, () => downloadUpdate())
   ipcMain.handle(IPC.UPDATES_INSTALL, () => installUpdate())
+
+  ipcMain.handle(IPC.AUTH_STATUS, () => wrap(() => getAuthStatus()))
+  ipcMain.handle(IPC.AUTH_REGISTER, (_e, input: RegisterLocalUserInput) =>
+    wrap(() => registerLocalUser(input))
+  )
+  ipcMain.handle(IPC.AUTH_LOGIN, (_e, input: LoginLocalUserInput) =>
+    wrap(() => loginLocalUser(input))
+  )
+  ipcMain.handle(IPC.AUTH_LOGOUT, () => wrap(() => logoutLocalUser()))
 }

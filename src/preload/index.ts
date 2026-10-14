@@ -5,9 +5,11 @@ import type {
   CreateRewardInput,
   CustomerSearchParams,
   DateRange,
+  LoginLocalUserInput,
   RedeemRewardInput,
   RecordPurchaseInput,
   RegisterCustomerInput,
+  RegisterLocalUserInput,
   UpdateCustomerInput,
   UpdateRewardInput,
   UpdateSettingsInput
@@ -87,6 +89,13 @@ const api = {
       ipcRenderer.on('updates:status', listener)
       return () => ipcRenderer.removeListener('updates:status', listener)
     }
+  },
+
+  auth: {
+    status: () => ipcRenderer.invoke(IPC.AUTH_STATUS),
+    register: (input: RegisterLocalUserInput) => ipcRenderer.invoke(IPC.AUTH_REGISTER, input),
+    login: (input: LoginLocalUserInput) => ipcRenderer.invoke(IPC.AUTH_LOGIN, input),
+    logout: () => ipcRenderer.invoke(IPC.AUTH_LOGOUT)
   }
 }
 

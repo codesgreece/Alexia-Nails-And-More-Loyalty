@@ -182,6 +182,25 @@ const migrations: Migration[] = [
         ).run()
       }
     }
+  },
+  {
+    version: 3,
+    name: 'local_app_users',
+    up: (db) => {
+      db.exec(`
+        CREATE TABLE IF NOT EXISTS app_users (
+          id TEXT PRIMARY KEY,
+          username TEXT NOT NULL UNIQUE COLLATE NOCASE,
+          password_salt TEXT NOT NULL,
+          password_hash TEXT NOT NULL,
+          date_of_birth TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_app_users_username ON app_users(username);
+      `)
+    }
   }
 ]
 

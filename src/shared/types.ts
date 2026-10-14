@@ -247,6 +247,30 @@ export interface RestoreResult {
   message: string
 }
 
+export interface AuthUser {
+  id: string
+  username: string
+  dateOfBirth: string
+  createdAt: string
+}
+
+export interface AuthStatus {
+  authenticated: boolean
+  needsSetup: boolean
+  user: AuthUser | null
+}
+
+export interface RegisterLocalUserInput {
+  username: string
+  password: string
+  dateOfBirth: string
+}
+
+export interface LoginLocalUserInput {
+  username: string
+  password: string
+}
+
 export interface UpdateCheckResult {
   updateAvailable: boolean
   currentVersion: string
