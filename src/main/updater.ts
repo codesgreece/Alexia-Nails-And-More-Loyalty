@@ -33,6 +33,21 @@ function updatesAllowed(): boolean {
   return app.isPackaged || isDevUpdatesForced()
 }
 
+function friendlyUpdateError(err: unknown): string {
+  const raw = err instanceof Error ? err.message : String(err ?? '')
+  const lower = raw.toLowerCase()
+  if (lower.includes('enotfound') || lower.includes('net::') || lower.includes('offline')) {
+    return 'Χωρίς σύνδεση internet. Η εφαρμογή συνεχίζει κανονικά offline.'
+  }
+  if (lower.includes('404') || lower.includes('latest.yml') || lower.includes('cannot find')) {
+    return 'Η ενημέρωση δεν είναι ακόμα διαθέσιμη στο GitHub. Δοκιμάστε ξανά σε λίγο.'
+  }
+  if (lower.includes('401') || lower.includes('403') || lower.includes('authentication')) {
+    return 'Αδυναμία πρόσβασης στο αποθετήριο ενημερώσεων.'
+  }
+  return 'Αδυναμία ελέγχου ενημερώσεων. Δοκιμάστε ξανά αργότερα.'
+}
+
 export function setupAutoUpdater(getMainWindow: () => BrowserWindow | null): void {
   if (!updatesAllowed()) return
 
@@ -91,7 +106,7 @@ export function setupAutoUpdater(getMainWindow: () => BrowserWindow | null): voi
     downloading = false
     sendStatus(getMainWindow, {
       type: 'error',
-      message: err.message
+      message: friendlyUpdateError(err)
     })
   })
 
@@ -157,11 +172,11 @@ export async function checkForUpdates(): Promise<UpdateCheckResult> {
         ? `Διαθέσιμη ενημέρωση: ${latest}`
         : 'Έχετε την πιο πρόσφατη έκδοση'
     }
-  } catch {
+  } catch (err) {
     return {
       updateAvailable: false,
       currentVersion,
-      message: 'Αδυναμία ελέγχου ενημερώσεων (χωρίς σύνδεση ή μη διαθέσιμο αποθετήριο)'
+      message: friendlyUpdateError(err)
     }
   } finally {
     checking = false

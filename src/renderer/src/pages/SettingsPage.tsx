@@ -29,6 +29,7 @@ export function SettingsPage() {
           setMessage('Έλεγχος για ενημερώσεις...')
           break
         case 'available':
+          setError('')
           setMessage(`Διαθέσιμη ενημέρωση: ${status.version}`)
           setUpdateInfo((prev) =>
             prev
@@ -42,6 +43,7 @@ export function SettingsPage() {
           )
           break
         case 'not-available':
+          setError('')
           setMessage('Έχετε την πιο πρόσφατη έκδοση')
           break
         case 'progress':
@@ -52,12 +54,14 @@ export function SettingsPage() {
           setDownloadPercent(100)
           setDownloaded(true)
           setBusy(false)
+          setError('')
           setMessage(`Η έκδοση ${status.version} είναι έτοιμη. Επιβεβαιώστε για εγκατάσταση.`)
           break
         case 'error':
           setBusy(false)
           setDownloadPercent(null)
           setError(status.message || 'Σφάλμα ενημέρωσης')
+          setMessage('')
           break
         default:
           break

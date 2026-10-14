@@ -1,5 +1,5 @@
 import { existsSync } from 'fs'
-import { app, BrowserWindow, shell } from 'electron'
+import { app, BrowserWindow, Menu, shell } from 'electron'
 import { join } from 'path'
 import { getDatabasePath, openDatabase, closeDatabase } from './db/connection'
 import { runMigrations } from './db/migrations'
@@ -57,6 +57,8 @@ function createWindow(): void {
 }
 
 app.whenReady().then(async () => {
+  Menu.setApplicationMenu(null)
+
   const userData = app.getPath('userData')
   const dbPath = getDatabasePath(userData)
   const db = await openDatabase(dbPath)
