@@ -14,21 +14,26 @@ import { ReferralsPage } from './pages/ReferralsPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { RewardsPage } from './pages/RewardsPage'
 import { SettingsPage } from './pages/SettingsPage'
+import { SplashLoadingPage } from './pages/SplashLoadingPage'
 import { StatsPage } from './pages/StatsPage'
 import { api } from './lib/api'
 
 export default function App() {
   const [auth, setAuth] = useState<AuthStatus | null>(null)
   const [bootError, setBootError] = useState('')
+  const [showSplash, setShowSplash] = useState(false)
 
-  const refreshAuth = useCallback(async () => {
+  const refreshAuth = useCallback(async (opts?: { afterLogin?: boolean }) => {
     try {
       const status = await api().auth.status()
       if (status && typeof status === 'object' && 'authenticated' in status) {
-        setAuth(status as AuthStatus)
+        const next = status as AuthStatus
+        setAuth(next)
+        if (opts?.afterLogin && next.authenticated) {
+          setShowSplash(true)
+        }
         return
       }
-      // wrap() error shape
       if (status && typeof status === 'object' && 'error' in status) {
         setBootError(String((status as { error: string }).error))
         return
@@ -61,14 +66,27 @@ export default function App() {
 
   if (!auth.authenticated) {
     if (auth.needsSetup) {
-      return <AuthSetupPage onSuccess={() => void refreshAuth()} />
+      return <AuthSetupPage onSuccess={() => void refreshAuth({ afterLogin: true })} />
     }
-    return <LoginPage onSuccess={() => void refreshAuth()} />
+    return <LoginPage onSuccess={() => void refreshAuth({ afterLogin: true })} />
+  }
+
+  if (showSplash) {
+    return <SplashLoadingPage onDone={() => setShowSplash(false)} />
   }
 
   return (
     <Routes>
-      <Route element={<Layout onLogout={() => void refreshAuth()} />}>
+      <Route
+        element={
+          <Layout
+            onLogout={() => {
+              setShowSplash(false)
+              void refreshAuth()
+            }}
+          />
+        }
+      >
         <Route index element={<DashboardPage />} />
         <Route path="customers" element={<CustomersPage />} />
         <Route path="customers/:id" element={<CustomerProfilePage />} />
